@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Cat {
 
-    private final Feline feline; // Было: Predator predator — исправлено
+    private final Feline feline;
 
     public Cat(Feline feline) {
         this.feline = feline;
@@ -18,7 +18,6 @@ public class Cat {
         return feline.eatMeat();
     }
 
-    // ✅ Добавлен метод — теперь тесты смогут его вызвать
     public int getKittens() {
         return feline.getKittens();
     }

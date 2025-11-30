@@ -25,7 +25,7 @@ public class Lion implements Predator {
         return hasMane;
     }
 
-    // Используем переданный Feline
+    // Переданный Feline
     @Override
     public List<String> eatMeat() throws Exception {
         return feline.eatMeat(); // делегируем
