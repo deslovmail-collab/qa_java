@@ -2,57 +2,54 @@ package com.example;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 public class AnimalTest {
 
     private final Animal animal = new Animal();
 
+    // Травоядное — еда
     @Test
-    public void getFood_дляТравоядного_возвращаетРастения() throws Exception {
-        List<String> food = animal.getFood("Травоядное");
-        assertEquals(2, food.size());
-        assertTrue(food.contains("Трава"));
-        assertTrue(food.contains("Различные растения"));
+    public void getFoodForHerbivoreShouldReturnPlants() throws Exception {
+        List<String> expected = Arrays.asList("Трава", "Различные растения");
+        List<String> actual = animal.getFood("Травоядное");
+
+        assertEquals("Список еды для травоядного не совпадает с ожидаемым", expected, actual);
     }
 
+    // Хищник — еда
     @Test
-    public void getFood_дляХищника_возвращаетЖивотных() throws Exception {
-        List<String> food = animal.getFood("Хищник");
-        assertEquals(3, food.size());
-        assertTrue(food.contains("Животные"));
-        assertTrue(food.contains("Птицы"));
-        assertTrue(food.contains("Рыба"));
+    public void getFoodForPredatorShouldReturnAnimals() throws Exception {
+        List<String> expected = Arrays.asList("Животные", "Птицы", "Рыба");
+        List<String> actual = animal.getFood("Хищник");
+
+        assertEquals("Список еды для хищника не совпадает с ожидаемым", expected, actual);
     }
 
+    // Некорректный вид
     @Test
-    public void getFood_сНекорректнымВидом_бросаетИсключение() {
+    public void getFoodWithInvalidAnimalTypeShouldThrowException() {
         try {
             animal.getFood("Птица");
-            fail("Ожидалось исключение");
+            fail("Ожидалось исключение при передаче некорректного вида животного");
         } catch (Exception e) {
-            assertEquals("Неизвестный вид животного, используйте значение Травоядное или Хищник", e.getMessage());
+            assertEquals(
+                    "Сообщение об ошибке должно быть точным",
+                    "Неизвестный вид животного, используйте значение Травоядное или Хищник",
+                    e.getMessage()
+            );
         }
     }
 
+    // getFamily
     @Test
-    public void getFamily_возвращаетТекстОСемействах() {
-        String family = animal.getFamily();
-        assertNotNull(family);
-        assertTrue(family.contains("кошачьи"));
-        assertTrue(family.contains("псовые"));
-    }
+    public void getFamilyShouldReturnCorrectDescription() {
+        String expected = "Существует несколько семейств: заячьи, беличьи, мышиные, кошачьи, псовые, медвежьи, куньи";
+        String actual = animal.getFamily();
 
-    @Test
-    public void getFamily_возвращаетОбщееОписаниеСемейств() {
-        String family = animal.getFamily();
-        assertNotNull("Семейство не должно быть null", family);
-        assertTrue("Описание должно содержать 'кошачьи'", family.contains("кошачьи"));
-        assertTrue("Описание должно содержать 'псовые'", family.contains("псовые"));
-        assertEquals("Существует несколько семейств: заячьи, беличьи, мышиные, кошачьи, псовые, медвежьи, куньи", family);
+        assertEquals("Описание семейств не совпадает с ожидаемым", expected, actual);
     }
 }
-

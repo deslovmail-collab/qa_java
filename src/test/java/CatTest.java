@@ -1,6 +1,7 @@
 package com.example;
 
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
@@ -12,76 +13,108 @@ import java.util.List;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
-@RunWith(Parameterized.class)
+@RunWith(Enclosed.class)
 public class CatTest {
 
-    private final String expectedFood;
-    private final int expectedKittens;
-    private final String animalType;
-    private final String foodItem;
+    @RunWith(Parameterized.class)
+    public static class CatFoodTest {
+        private final String expectedFood;
 
-    public CatTest(String expectedFood, int expectedKittens, String animalType, String foodItem) {
-        this.expectedFood = expectedFood;
-        this.expectedKittens = expectedKittens;
-        this.animalType = animalType;
-        this.foodItem = foodItem;
-    }
+        @Parameterized.Parameters(name = "Кошка ест: {0}")
+        public static Collection<Object[]> data() {
+            return Arrays.asList(new Object[][]{
+                    {"Мышь"},
+                    {"Птица"},
+                    {"Рыба"}
+            });
+        }
 
-    @Parameterized.Parameters(name = "Тест с едой: {0}, котятами: {1}, животным: {2}")
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {"Мышь", 0, null, null},
-                {"Птица", 0, null, null},
-                {"Рыба", 0, null, null},
+        public CatFoodTest(String expectedFood) {
+            this.expectedFood = expectedFood;
+        }
 
-                {null, 1, null, null},
-                {null, 2, null, null},
-                {null, 5, null, null},
-
-                {null, 0, "Лев", "Газель"},
-                {null, 0, "Лев", "Зебра"},
-                {null, 0, "Кошка", "Мышь"},
-                {null, 0, "Кошка", "Птица"}
-        });
-    }
-
-    @Test
-    public void кошкаПолучаетУказаннуюЕду() throws Exception {
-        if (expectedFood != null) {
+        @Test
+        public void catGetFoodShouldReturnAllMeat() throws Exception {
             Feline mockFeline = Mockito.mock(Feline.class);
-            when(mockFeline.eatMeat()).thenReturn(Arrays.asList("Мышь", "Птица", "Рыба"));
+            List<String> expectedFoodList = Arrays.asList("Мышь", "Птица", "Рыба");
+            when(mockFeline.eatMeat()).thenReturn(expectedFoodList);
 
             Cat cat = new Cat(mockFeline);
-            List<String> food = cat.getFood();
+            List<String> actualFood = cat.getFood();
 
-            assertTrue("Еда должна содержать: " + expectedFood, food.contains(expectedFood));
+            assertEquals("Список еды кошки не совпадает с ожидаемым", expectedFoodList, actualFood);
         }
     }
 
-    @Test
-    public void кошкаПолучаетУказанноеКоличествоКотят() throws Exception {
-        if (expectedKittens != 0) {
+    @RunWith(Parameterized.class)
+    public static class CatKittensTest {
+        private final int expectedKittens;
+
+        @Parameterized.Parameters(name = "Количество котят: {0}")
+        public static Collection<Object[]> data() {
+            return Arrays.asList(new Object[][]{
+                    {1},
+                    {2},
+                    {5}
+            });
+        }
+
+        public CatKittensTest(int expectedKittens) {
+            this.expectedKittens = expectedKittens;
+        }
+
+        @Test
+        public void catGetKittensShouldReturnCorrectCount() throws Exception {
             Feline mockFeline = Mockito.mock(Feline.class);
             when(mockFeline.getKittens()).thenReturn(expectedKittens);
 
             Cat cat = new Cat(mockFeline);
-            assertEquals(expectedKittens, cat.getKittens());
+            assertEquals("Количество котят должно быть " + expectedKittens,
+                    expectedKittens, cat.getKittens());
         }
     }
 
-    @Test
-    public void животныеПолучаютПравильнуюЕду() throws Exception {
-        if (animalType != null && foodItem != null) {
+    @RunWith(Parameterized.class)
+    public static class AnimalDietComparisonTest {
+        private final String animalType;
+        private final String foodItem;
+
+        @Parameterized.Parameters(name = "Животное: {0}, еда: {1}")
+        public static Collection<Object[]> data() {
+            return Arrays.asList(new Object[][]{
+                    {"Лев", "Газель"},
+                    {"Лев", "Зебра"},
+                    {"Кошка", "Мышь"},
+                    {"Кошка", "Птица"}
+            });
+        }
+
+        public AnimalDietComparisonTest(String animalType, String foodItem) {
+            this.animalType = animalType;
+            this.foodItem = foodItem;
+        }
+
+        @Test
+        public void animalEatMeatShouldContainCorrectFood() throws Exception {
             Feline mockFeline = Mockito.mock(Feline.class);
-            when(mockFeline.eatMeat()).thenReturn(Arrays.asList("Газель", "Зебра", "Мышь", "Птица"));
+            List<String> expectedMeat = Arrays.asList("Газель", "Зебра", "Мышь", "Птица");
+            when(mockFeline.eatMeat()).thenReturn(expectedMeat);
 
             if ("Лев".equals(animalType)) {
                 Lion lion = new Lion("Самец", mockFeline);
-                assertTrue(lion.eatMeat().contains(foodItem));
+                assertEquals("Лев должен есть всю указанную еду", expectedMeat, lion.eatMeat());
             } else if ("Кошка".equals(animalType)) {
                 Cat cat = new Cat(mockFeline);
-                assertTrue(cat.getFood().contains(foodItem));
+                assertEquals("Кошка должна есть всю указанную еду", expectedMeat, cat.getFood());
             }
         }
+    }
+
+    // Проверка звука кошки
+    @Test
+    public void catGetSoundShouldReturnMeow() {
+        Cat cat = new Cat(null);
+        String sound = cat.getSound();
+        assertEquals("Кошка должна говорить 'Мяу'", "Мяу", sound);
     }
 }

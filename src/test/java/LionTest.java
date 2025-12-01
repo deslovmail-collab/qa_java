@@ -64,7 +64,7 @@ public class LionTest {
     }
 
     @Test
-    public void левИмеетГриву_вЗависимостиОтПола() throws Exception {
+    public void lionShouldHaveManeDependingOnSex() throws Exception {
         if (sex != null && expectedHasMane != null) {
             Feline mockFeline = Mockito.mock(Feline.class);
             Lion lion = new Lion(sex, mockFeline);
@@ -73,23 +73,24 @@ public class LionTest {
     }
 
     @Test
-    public void животныеПолучаютПравильнуюЕду() throws Exception {
+    public void animalEatMeatShouldContainCorrectFood() throws Exception {
         if (animalType != null && foodItem != null) {
             Feline mockFeline = Mockito.mock(Feline.class);
-            when(mockFeline.eatMeat()).thenReturn(Arrays.asList("Газель", "Зебра", "Мышь", "Птица"));
+            List<String> expectedMeat = Arrays.asList("Газель", "Зебра", "Мышь", "Птица");
+            when(mockFeline.eatMeat()).thenReturn(expectedMeat);
 
             if ("Лев".equals(animalType)) {
                 Lion lion = new Lion("Самец", mockFeline);
-                assertTrue(lion.eatMeat().contains(foodItem));
+                assertEquals("Лев должен есть всю указанную еду", expectedMeat, lion.eatMeat());
             } else if ("Кошка".equals(animalType)) {
                 Cat cat = new Cat(mockFeline);
-                assertTrue(cat.getFood().contains(foodItem));
+                assertEquals("Кошка должна есть всю указанную еду", expectedMeat, cat.getFood());
             }
         }
     }
 
     @Test
-    public void левПолучаетУказанноеКоличествоКотят() throws Exception {
+    public void lionGetKittensShouldReturnCorrectCount() throws Exception {
         if (kittensFromFeline != null && expectedKittens != null) {
             Feline mockFeline = Mockito.mock(Feline.class);
             when(mockFeline.getKittens()).thenReturn(kittensFromFeline);
@@ -100,7 +101,7 @@ public class LionTest {
     }
 
     @Test
-    public void приНеверномПолеБросаетсяИсключение() {
+    public void constructorWithInvalidSexShouldThrowException() {
         if (isExceptionTest && invalidSex != null) {
             Feline mockFeline = Mockito.mock(Feline.class);
 
