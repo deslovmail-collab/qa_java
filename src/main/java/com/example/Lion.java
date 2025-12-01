@@ -2,31 +2,37 @@ package com.example;
 
 import java.util.List;
 
-public class Lion {
+public class Lion implements Predator {
 
-    boolean hasMane;
+    private final Feline feline;
+    private final boolean hasMane;
 
-    public Lion(String sex) throws Exception {
+    // Конструктор: зависимости передаются извне
+    public Lion(String sex, Feline feline) throws Exception {
+        this.feline = feline;// <-- зависимость внедрена
         if ("Самец".equals(sex)) {
-            hasMane = true;
+            this.hasMane = true;
         } else if ("Самка".equals(sex)) {
-            hasMane = false;
+            this.hasMane = false;
         } else {
-            throw new Exception("Используйте допустимые значения пола животного - самей или самка");
+            throw new Exception("Используйте допустимые значения пола животного - самец или самка");
         }
+
     }
 
-    Feline feline = new Feline();
-
-    public int getKittens() {
-        return feline.getKittens();
-    }
-
+    // Геттер для гривы
     public boolean doesHaveMane() {
         return hasMane;
     }
 
-    public List<String> getFood() throws Exception {
-        return feline.getFood("Хищник");
+    // Переданный Feline
+    @Override
+    public List<String> eatMeat() throws Exception {
+        return feline.eatMeat(); // делегируем
+    }
+
+    // Метод для котят — тоже через Feline
+    public int getKittens() {
+        return feline.getKittens();
     }
 }
